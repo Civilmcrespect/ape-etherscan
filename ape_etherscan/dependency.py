@@ -46,8 +46,7 @@ class EtherscanDependency(DependencyAPI):
             if isinstance(explorer, Etherscan):
                 # Could be using a different network.
                 return explorer
-            else:
-                return self.network_manager.ethereum.mainnet.explorer
+            return self.network_manager.ethereum.mainnet.explorer
 
         # Assume Ethereum
         return self.network_manager.ethereum.mainnet.explorer

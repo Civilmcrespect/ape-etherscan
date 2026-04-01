@@ -1,5 +1,5 @@
 import json
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from ape.api import ExplorerAPI, PluginConfig
 from ape.contracts import ContractInstance
@@ -90,7 +90,7 @@ class Etherscan(ExplorerAPI):
             )
         )
 
-    def get_manifest(self, address: AddressType) -> Optional[PackageManifest]:
+    def get_manifest(self, address: AddressType) -> PackageManifest | None:
         """
         Get a package manifest.
 
@@ -150,7 +150,7 @@ class Etherscan(ExplorerAPI):
         client = self._client_factory.get_contract_client(address)
         return client.get_source_code()
 
-    def get_contract_type(self, address: AddressType) -> Optional[ContractType]:
+    def get_contract_type(self, address: AddressType) -> ContractType | None:
         try:
             source_code = self._get_source_code(address)
         except ContractNotVerifiedError:
@@ -169,6 +169,6 @@ class Etherscan(ExplorerAPI):
     def publish_contract(self, address: AddressType):
         return self._publish_contract(address)
 
-    def _publish_contract(self, address: AddressType, project: Optional["ProjectManager"] = None):
+    def _publish_contract(self, address: AddressType, project: "ProjectManager | None" = None):
         verifier = SourceVerifier(address, self._client_factory, project=project)
         return verifier.attempt_verification()

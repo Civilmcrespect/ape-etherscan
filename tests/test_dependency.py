@@ -6,7 +6,7 @@ from ape_etherscan.dependency import EtherscanDependency
 
 
 @pytest.mark.parametrize(
-    "verification_type,contract_address,expected_name",
+    ("verification_type", "contract_address", "expected_name"),
     [
         ("flattened", "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", "BoredApeYachtClub"),
         ("json", "0x000075Dc60EdE898f11b0d5C6cA31D7A6D050eeD", "LOVEYOU"),
@@ -42,6 +42,5 @@ def test_dependency_not_verified(mock_backend):
         network="mainnet",
     )
     expected = "Etherscan dependency 'apes' not verified."
-    with create_tempdir() as temp_dir:
-        with pytest.raises(ProjectError, match=expected):
-            dependency.fetch(temp_dir)
+    with create_tempdir() as temp_dir, pytest.raises(ProjectError, match=expected):
+        dependency.fetch(temp_dir)

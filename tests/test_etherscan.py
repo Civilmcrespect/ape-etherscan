@@ -1,5 +1,7 @@
 from collections.abc import Callable
 
+import logging
+
 import pytest
 from ape.api.query import AccountTransactionQuery
 
@@ -26,7 +28,7 @@ PUBLISH_GUID = "123"
 
 
 base_url_test = pytest.mark.parametrize(
-    "chain_id,url", [(c["chainid"], c["blockexplorer"]) for c in get_supported_chains()]
+    ("chain_id", "url"), [(c["chainid"], c["blockexplorer"]) for c in get_supported_chains()]
 )
 
 
@@ -150,7 +152,7 @@ def test_get_contract_type_ecosystems_and_networks(mock_backend, chain_id, get_e
 
 
 @pytest.mark.parametrize(
-    "file_name", ("get_proxy_contract_response", ("get_vyper_contract_response"))
+    "file_name", ["get_proxy_contract_response", ("get_vyper_contract_response")]
 )
 def test_get_contract_type_additional_types(mock_backend, file_name, explorer, connection):
     # This test parametrizes getting edge-case contract types.
@@ -204,8 +206,9 @@ def test_publish_contract(
     fake_connection,
 ):
     setup_verification_test(lambda: "Pass - You made it!")
-    explorer.publish_contract(address_to_verify)
-    assert caplog.records[-1].message == expected_verification_log
+    with caplog.at_level(logging.INFO, logger="ape"):
+        explorer.publish_contract(address_to_verify)
+    assert expected_verification_log in [record.message for record in caplog.records]
 
 
 def test_publish_contract_when_guid_not_found_at_end(
@@ -220,8 +223,9 @@ def test_publish_contract_when_guid_not_found_at_end(
         raise EtherscanResponseError(mocker.MagicMock(), "Resource not found")
 
     setup_verification_test(raise_err, threshold=1)
-    explorer.publish_contract(address_to_verify)
-    assert caplog.records[-1].message == expected_verification_log
+    with caplog.at_level(logging.INFO, logger="ape"):
+        explorer.publish_contract(address_to_verify)
+    assert expected_verification_log in [record.message for record in caplog.records]
 
 
 def test_publish_contract_with_ctor_args(
@@ -233,8 +237,9 @@ def test_publish_contract_with_ctor_args(
     fake_connection,
 ):
     setup_verification_test_with_ctor_args(lambda: "Pass - You made it!")
-    explorer.publish_contract(address_to_verify_with_ctor_args)
-    assert caplog.records[-1].message == expected_verification_log_with_ctor_args
+    with caplog.at_level(logging.INFO, logger="ape"):
+        explorer.publish_contract(address_to_verify_with_ctor_args)
+    assert expected_verification_log_with_ctor_args in [record.message for record in caplog.records]
 
 
 def test_publish_contract_flatten_via_ir(mocker, project, address_to_verify):

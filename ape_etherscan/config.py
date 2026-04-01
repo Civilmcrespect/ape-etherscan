@@ -1,4 +1,3 @@
-from typing import Optional
 
 from ape.api.config import PluginConfig
 from pydantic import AnyHttpUrl, model_validator
@@ -6,8 +5,8 @@ from pydantic_settings import SettingsConfigDict
 
 
 class NetworkConfig(PluginConfig):
-    uri: Optional[AnyHttpUrl] = None
-    api_uri: Optional[AnyHttpUrl] = None
+    uri: AnyHttpUrl | None = None
+    api_uri: AnyHttpUrl | None = None
 
 
 class EcosystemConfig(PluginConfig):
@@ -19,7 +18,7 @@ class EcosystemConfig(PluginConfig):
     @model_validator(mode="after")
     def verify_extras(self) -> "EcosystemConfig":
         if self.__pydantic_extra__:
-            for aname in self.__pydantic_extra__.keys():
+            for aname in self.__pydantic_extra__:
                 self.__pydantic_extra__[aname] = NetworkConfig.model_validate(
                     self.__pydantic_extra__[aname]
                 )

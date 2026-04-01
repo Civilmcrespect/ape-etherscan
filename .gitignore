@@ -122,3 +122,5 @@ version.py
 **/.DS_Store
 *.swp
 *.swo
+
+uv.lock
